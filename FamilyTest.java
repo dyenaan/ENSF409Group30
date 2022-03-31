@@ -31,7 +31,7 @@ public class FamilyTest{
             correctException = true;
         }
 		
-		assertTrue("Person constructor did not throw an IllegalArgumentException when given a count less than 0: ", correctException);
+		assertTrue("Family constructor did not throw an IllegalArgumentException when given a count less than 0: ", correctException);
     }
 	
 	@Test
