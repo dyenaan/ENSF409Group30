@@ -6,9 +6,10 @@ import java.util.Map;
 
 public class Database {
 
-    public final String DBURL;
-    public final String USERNAME;
-    public final String PASSWORD;
+    private final String DBURL;
+    private final String USERNAME;
+    private final String PASSWORD;
+    private int itemLength;
 
     private Connection dbConnect;
     private ResultSet results;
@@ -22,6 +23,7 @@ public class Database {
     public void initializeConnection() {
         try {
             dbConnect = DriverManager.getConnection(this.DBURL, this.USERNAME, this.PASSWORD);
+            updateItemLength();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -39,7 +41,7 @@ public class Database {
         return this.PASSWORD;
     }
 
-    public Map selectClientNeeds(int clientID) {
+    public Map<String, String> selectClientNeeds(int clientID) {
         Map<String, String> map = new HashMap<String, String>();
         String ID = Integer.toString(clientID);
 
@@ -69,14 +71,14 @@ public class Database {
         return map;
     }
 
-    public Map selectFoodItem(int foodID) {
+    public Map<String, String> selectFoodItem(int foodID) {
         Map<String, String> map = new HashMap<String, String>();
         String ID = Integer.toString(foodID);
 
         try {
             Statement myStmt = dbConnect.createStatement();
             results = myStmt.executeQuery("SELECT * FROM AVAILABLE_FOOD WHERE (ItemID =" + ID + ")");
-            if (!results.next()) throw new IllegalArgumentException("Invalid food ID");
+            if (!results.next()) throw new IllegalArgumentException(ID + " is an invalid food ID");
             else {
                 String grainContent = results.getString("GrainContent");
                 String fvContent = results.getString("FVContent");
@@ -100,19 +102,41 @@ public class Database {
         return map;
     }
 
-    public int getItemLength() {
+    public void updateItemLength() {
         int length = 0;
         try {
+            String query = "SELECT * FROM AVAILABLE_FOOD";
+
             Statement myStmt = dbConnect.createStatement();
-            results = myStmt.executeQuery("SELECT * FROM AVAILABLE_FOOD");
+            results = myStmt.executeQuery(query);
+
             while (results.next()) {
                 length++;
             }
+
             myStmt.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        return length;
+        this.itemLength = length;
+    }
+
+    public int getItemLength() {
+        return this.itemLength;
+    }
+
+    public void deleteFoodItem(int foodID) {
+        try {
+            String query = "DELETE FROM AVAILABLE_FOOD WHERE ItemID = ?";
+
+            PreparedStatement preparedStmt = dbConnect.prepareStatement(query);
+            preparedStmt.setInt(1, foodID);
+            preparedStmt.execute();
+
+            preparedStmt.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void close() {
