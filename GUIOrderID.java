@@ -1,4 +1,3 @@
-
 package edu.ucalgary.ensf409;
 
 import java.awt.BorderLayout;
@@ -106,7 +105,23 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener{
             JOptionPane.showMessageDialog(this, "Your order ID is " + orderID);
         }
     }
-    
+	
+    public int getMaleCount(){
+		return Integer.parseInt(mCInput.getText());
+	}
+	
+	public int getFemaleCount(){
+		return Integer.parseInt(fCInput.getText());
+	}
+	
+	public int getChildUECount(){
+		return Integer.parseInt(cUEInput.getText());
+	}
+	
+	public int getChildOECount(){
+		return Integer.parseInt(cOEInput.getText());
+	}
+	
     public void mouseClicked(MouseEvent event){
         
         if(event.getSource().equals(mCInput))
@@ -146,32 +161,35 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener{
         return orderID;
     }    
     
-    private boolean validateInput(){
+    private boolean validateInput()throws IllegalArgumentException{
         
         boolean allInputValid = true;
         
         if(maleCount < 0){
             allInputValid = false;
-            JOptionPane.showMessageDialog(this, maleCount + " is an invalid input.");
+			throw new IllegalArgumentException();
+            //JOptionPane.showMessageDialog(this, maleCount + " is an invalid input.");
         }
         
         if(femaleCount < 0){
             allInputValid = false;
-            JOptionPane.showMessageDialog(this, femaleCount + " is an invalid input.");
+			throw new IllegalArgumentException();
+            //JOptionPane.showMessageDialog(this, femaleCount + " is an invalid input.");
         }
 
         if(childUECount < 0){
             allInputValid = false;
-            JOptionPane.showMessageDialog(this, childUECount + " is an invalid input.");
+			throw new IllegalArgumentException();
+            //JOptionPane.showMessageDialog(this, childUECount + " is an invalid input.");
         }
 
         if(childOECount < 0){
             allInputValid = false;
-            JOptionPane.showMessageDialog(this, childOECount + " is an invalid input.");
+			throw new IllegalArgumentException();
+            //JOptionPane.showMessageDialog(this, childOECount + " is an invalid input.");
         }
         
         return allInputValid;
-        
     }
 
     
