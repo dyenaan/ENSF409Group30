@@ -12,14 +12,17 @@ public class Person{
 	
 	
 	
-	public Person(Database db, int clientID)throws IllegalArgumentException{
+	public Person(int clientID)throws IllegalArgumentException{
 		
 		if(!validClientID(clientID)){
 			throw new IllegalArgumentException();
 		}
 		
+		Database db = new Database("jdbc:mysql://localhost/food_inventory", "student", "ensf");
+        db.initializeConnection();
 		Map<String, String> map = new HashMap<String, String>();
 		map = db.selectClientNeeds(clientID.toString());
+		db.close();
 		
 		this.CALORIES = Integer.parseInt(map.get("Calories"));
 		this.FRUITVEGGIES = Integer.parseInt(map.get("FruitVeggies"));
