@@ -26,7 +26,7 @@ import java.util.Map;
 */
 
 class Algorithm {
-    private final double familyCalories;
+    private final double familyTotalCalories;
     private final double familyWGCalories;
     private final double familyFVCalories;
     private final double familyProCalories;
@@ -36,7 +36,7 @@ class Algorithm {
 
     // @TODO Change it so that the constructor accepts an array of person objects.
     public Algorithm(int calories, int wholeGrains, int fruitVeggies, int protein, int other) {
-        this.familyCalories = calories;
+        this.familyTotalCalories = calories;
         this.familyWGCalories = wholeGrains * calories * 0.01;
         this.familyFVCalories = fruitVeggies * calories * 0.01;
         this.familyProCalories = protein * calories * 0.01;
@@ -51,7 +51,7 @@ class Algorithm {
     public double getFamilyNutritionCalories(String nutrition) {
         switch (nutrition) {
             case "Calories":
-                return familyCalories;
+                return familyTotalCalories;
             case "WholeGrains":
                 return familyWGCalories;
             case "FruitVeggies":
@@ -68,17 +68,22 @@ class Algorithm {
     // The findBestHamper method calls the appropriate methods to generate the best hamper possible. It also checks
     // if there is enough stock and deletes the items from the database if a hamper is possible.
 
-    public ArrayList<Map<String, String>> findBestHamper(Database db) throws StockNotAvailableException {
-        ArrayList<Map<String, String>> combination = new ArrayList<>();
+    public ArrayList<Map<String, String>> findBestHamper(Database db) throws StockNotAvailableException, HamperAlreadyFoundException {
+        if (this.bestHamper.isEmpty()) {
+            ArrayList<Map<String, String>> combination = new ArrayList<>();
 
-        for (int combinationLength = 1; combinationLength <= db.getItemLength(); combinationLength++) {
-            findFoodCombinations(db, combination, 0, db.getItemLength() - 1, 0, combinationLength);
+            for (int combinationLength = 1; combinationLength <= db.getItemLength(); combinationLength++) {
+                findFoodCombinations(db, combination, 0, db.getItemLength() - 1, 0, combinationLength);
+            }
+
+            if (this.bestHamper.isEmpty())
+                throw new StockNotAvailableException("The available stock isn't sufficient enough to create a hamper!");
+            deleteHamperFromDatabase(db, this.bestHamper);
+            return this.bestHamper;
+
+        } else {
+            throw new HamperAlreadyFoundException("The best hamper for the family was already found!");
         }
-        if (this.bestHamper.isEmpty())
-            throw new StockNotAvailableException("The available stock isn't sufficient enough to create a hamper!");
-
-        deleteHamperFromDatabase(db, this.bestHamper);
-        return this.bestHamper;
     }
 
     // The checkCurrentHamper method checks if the waste of an inputted combination of food items is less than the waste
@@ -90,8 +95,8 @@ class Algorithm {
             Map<String, String> combinedBestHamper = combineHamperNutrition(this.bestHamper);
             Map<String, String> combinedCombination = combineHamperNutrition(combination);
 
-            double bestHamperDiff = Double.parseDouble(combinedBestHamper.get("Calories")) - this.familyCalories;
-            double combinationDiff = Double.parseDouble(combinedCombination.get("Calories")) - this.familyCalories;
+            double bestHamperDiff = Double.parseDouble(combinedBestHamper.get("Calories")) - this.familyTotalCalories;
+            double combinationDiff = Double.parseDouble(combinedCombination.get("Calories")) - this.familyTotalCalories;
             if (combinationDiff < bestHamperDiff) this.bestHamper = new ArrayList<>(combination);
         }
     }
