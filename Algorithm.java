@@ -75,7 +75,7 @@ class Algorithm {
             findFoodCombinations(db, combination, 0, db.getItemLength() - 1, 0, combinationLength);
         }
         if (this.bestHamper.isEmpty())
-            throw new StockNotAvailableException("The available stuck isn't sufficient enough to create a hamper!");
+            throw new StockNotAvailableException("The available stock isn't sufficient enough to create a hamper!");
 
         deleteHamperFromDatabase(db, this.bestHamper);
         return this.bestHamper;
