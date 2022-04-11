@@ -41,14 +41,16 @@ public class Database {
         return this.PASSWORD;
     }
 
-    public Map<String, String> selectClientNeeds(int clientID) {
+    public Map<String, String> selectClientNeeds(String clientID) {
         Map<String, String> map = new HashMap<String, String>();
-        String ID = Integer.toString(clientID);
 
         try {
             Statement myStmt = dbConnect.createStatement();
-            results = myStmt.executeQuery("SELECT * FROM DAILY_CLIENT_NEEDS WHERE (ClientID =" + ID + ")");
-            if (!results.next()) throw new IllegalArgumentException("Invalid client ID");
+
+            String query = String.format("SELECT * FROM DAILY_CLIENT_NEEDS WHERE (ClientID = %s)", clientID);
+            results = myStmt.executeQuery(query);
+
+            if (!results.next()) throw new IllegalArgumentException(clientID + " is an invalid client ID");
             else {
                 String calories = results.getString("Calories");
                 String wholeGrains = results.getString("WholeGrains");
@@ -61,7 +63,7 @@ public class Database {
                 map.put("Protein", protein);
                 map.put("FruitVeggies", fruitsVeggies);
                 map.put("Other", other);
-                map.put("ClientID", ID);
+                map.put("ClientID", clientID);
             }
 
             myStmt.close();
@@ -71,14 +73,16 @@ public class Database {
         return map;
     }
 
-    public Map<String, String> selectFoodItem(int foodID) {
+    public Map<String, String> selectFoodItem(String foodID) {
         Map<String, String> map = new HashMap<String, String>();
-        String ID = Integer.toString(foodID);
 
         try {
             Statement myStmt = dbConnect.createStatement();
-            results = myStmt.executeQuery("SELECT * FROM AVAILABLE_FOOD WHERE (ItemID =" + ID + ")");
-            if (!results.next()) throw new IllegalArgumentException(ID + " is an invalid food ID");
+
+            String query = String.format("SELECT * FROM AVAILABLE_FOOD WHERE (ItemID = %s)", foodID);
+            results = myStmt.executeQuery(query);
+
+            if (!results.next()) throw new IllegalArgumentException(foodID + " is an invalid food ID");
             else {
                 String grainContent = results.getString("GrainContent");
                 String fvContent = results.getString("FVContent");
@@ -92,7 +96,7 @@ public class Database {
                 map.put("ProContent", proContent);
                 map.put("Other", other);
                 map.put("Calories", calories);
-                map.put("ItemID", ID);
+                map.put("ItemID", foodID);
                 map.put("Name", name);
             }
             myStmt.close();
@@ -125,12 +129,12 @@ public class Database {
         return this.itemLength;
     }
 
-    public void deleteFoodItem(int foodID) {
+    public void deleteFoodItem(String foodID) {
         try {
             String query = "DELETE FROM AVAILABLE_FOOD WHERE ItemID = ?";
 
             PreparedStatement preparedStmt = dbConnect.prepareStatement(query);
-            preparedStmt.setInt(1, foodID);
+            preparedStmt.setString(1, foodID);
             preparedStmt.execute();
 
             preparedStmt.close();
@@ -138,6 +142,28 @@ public class Database {
             ex.printStackTrace();
         }
     }
+
+    public String[] getItemIDs() {
+        String[] itemIDs = new String[this.getItemLength()];
+        try {
+            String query = "SELECT * FROM AVAILABLE_FOOD";
+
+            Statement myStmt = dbConnect.createStatement();
+            results = myStmt.executeQuery(query);
+
+            int i = 0;
+            while (results.next()) {
+                itemIDs[i] = results.getString("ItemID");
+                i++;
+            }
+
+            myStmt.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return itemIDs;
+    }
+
 
     public void close() {
         try {
