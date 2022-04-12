@@ -5,6 +5,8 @@ import java.awt.EventQueue;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.FlowLayout;
+import java.util.ArrayList;
+import java.util.Map;
 import javax.swing.SpringLayout;
 
 public class GUIOrderID extends JFrame implements ActionListener, MouseListener{
@@ -13,7 +15,7 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener{
     private int femaleCount;
     private int childUECount;
     private int childOECount;
-    
+
     private JLabel instructions;
     private JLabel mCLabel;
     private JLabel fCLabel;
@@ -25,7 +27,7 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener{
     private JTextField cUEInput;
     private JTextField cOEInput;
     
-    public GUIPetID(){
+    public GUIOrderID(){
         super("Create an order!");
         setupGUI();
         setSize(500,300);
@@ -34,7 +36,6 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener{
     }
     
     public void setupGUI(){
-        
         instructions = new JLabel("Please enter your information to generate an order");
         mCLabel = new JLabel("Male:");
         fCLabel = new JLabel("Female:");
@@ -196,7 +197,7 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener{
     public static void main(String[] args) {
         
         EventQueue.invokeLater(() -> {
-            new GUIPetID().setVisible(true);        
+            new GUIOrderID().setVisible(true);
         });
     }
         

@@ -26,39 +26,44 @@ import java.util.Map;
 */
 
 class Algorithm {
-    private final double familyTotalCalories;
-    private final double familyWGCalories;
-    private final double familyFVCalories;
-    private final double familyProCalories;
-    private final double familyOtherCalories;
+    private double familyTotalCalories;
+    private double familyWGCalories;
+    private double familyFVCalories;
+    private double familyProCalories;
+    private double familyOtherCalories;
 
     private ArrayList<Map<String, String>> bestHamper = new ArrayList<>();
 
-    // @TODO Change it so that the constructor accepts an array of person objects.
-    public Algorithm(int calories, int wholeGrains, int fruitVeggies, int protein, int other) {
-        this.familyTotalCalories = calories;
-        this.familyWGCalories = wholeGrains * calories * 0.01;
-        this.familyFVCalories = fruitVeggies * calories * 0.01;
-        this.familyProCalories = protein * calories * 0.01;
-        this.familyOtherCalories = other * calories * 0.01;
+    public Algorithm(Person[] people) throws HamperAlreadyFoundException, StockNotAvailableException {
+        for (int i = 0; i < people.length; i++) {
+            familyTotalCalories += people[i].getNutrition(NutritionTypes.CALORIES);
+            familyWGCalories += 0.01 * people[i].getNutrition(NutritionTypes.WHOLE_GRAINS) * people[i].getNutrition(NutritionTypes.CALORIES);
+            familyFVCalories += 0.01 * people[i].getNutrition(NutritionTypes.FRUIT_VEGGIES) * people[i].getNutrition(NutritionTypes.CALORIES);
+            familyProCalories += 0.01 * people[i].getNutrition(NutritionTypes.PROTEIN) * people[i].getNutrition(NutritionTypes.CALORIES);
+            familyOtherCalories += 0.01 * people[i].getNutrition(NutritionTypes.OTHER) * people[i].getNutrition(NutritionTypes.CALORIES);
+        }
+
+        Database db = new Database("jdbc:mysql://localhost/food_inventory", "student", "ensf");
+        db.initializeConnection();
+        findBestHamper(db);
+        db.close();
     }
 
     public ArrayList<Map<String, String>> getBestHamper() {
         return this.bestHamper;
     }
 
-    // @TODO Use enumeration to implement the getter properly!
-    public double getFamilyNutritionCalories(String nutrition) {
-        switch (nutrition) {
-            case "Calories":
+    public double getFamilyNutritionCalories(NutritionTypes type) {
+        switch (type) {
+            case CALORIES:
                 return familyTotalCalories;
-            case "WholeGrains":
+            case WHOLE_GRAINS:
                 return familyWGCalories;
-            case "FruitVeggies":
+            case FRUIT_VEGGIES:
                 return familyFVCalories;
-            case "Protein":
+            case PROTEIN:
                 return familyProCalories;
-            case "Other":
+            case OTHER:
                 return familyOtherCalories;
             default:
                 throw new IllegalArgumentException("Did not recognize input");
@@ -68,7 +73,7 @@ class Algorithm {
     // The findBestHamper method calls the appropriate methods to generate the best hamper possible. It also checks
     // if there is enough stock and deletes the items from the database if a hamper is possible.
 
-    public ArrayList<Map<String, String>> findBestHamper(Database db) throws StockNotAvailableException, HamperAlreadyFoundException {
+    private ArrayList<Map<String, String>> findBestHamper(Database db) throws StockNotAvailableException, HamperAlreadyFoundException {
         if (this.bestHamper.isEmpty()) {
             ArrayList<Map<String, String>> combination = new ArrayList<>();
 
@@ -95,8 +100,8 @@ class Algorithm {
             Map<String, String> combinedBestHamper = combineHamperNutrition(this.bestHamper);
             Map<String, String> combinedCombination = combineHamperNutrition(combination);
 
-            double bestHamperDiff = Double.parseDouble(combinedBestHamper.get("Calories")) - this.familyTotalCalories;
-            double combinationDiff = Double.parseDouble(combinedCombination.get("Calories")) - this.familyTotalCalories;
+            double bestHamperDiff = Double.parseDouble(combinedBestHamper.get(NutritionTypes.CALORIES.asString())) - this.familyTotalCalories;
+            double combinationDiff = Double.parseDouble(combinedCombination.get(NutritionTypes.CALORIES.asString())) - this.familyTotalCalories;
             if (combinationDiff < bestHamperDiff) this.bestHamper = new ArrayList<>(combination);
         }
     }
@@ -107,10 +112,10 @@ class Algorithm {
     private boolean checkCombinationValidity(ArrayList<Map<String, String>> combination) {
         Map<String, String> combinedHamper = combineHamperNutrition(combination);
 
-        boolean wgValidity = Double.parseDouble(combinedHamper.get("GrainContent")) >= this.familyWGCalories;
-        boolean fvValidity = Double.parseDouble(combinedHamper.get("FVContent")) >= this.familyFVCalories;
-        boolean proValidity = Double.parseDouble(combinedHamper.get("ProContent")) >= this.familyProCalories;
-        boolean otherValidity = Double.parseDouble(combinedHamper.get("Other")) >= this.familyOtherCalories;
+        boolean wgValidity = Double.parseDouble(combinedHamper.get(NutritionTypes.WHOLE_GRAINS.asString())) >= this.familyWGCalories;
+        boolean fvValidity = Double.parseDouble(combinedHamper.get(NutritionTypes.FRUIT_VEGGIES.asString())) >= this.familyFVCalories;
+        boolean proValidity = Double.parseDouble(combinedHamper.get(NutritionTypes.PROTEIN.asString())) >= this.familyProCalories;
+        boolean otherValidity = Double.parseDouble(combinedHamper.get(NutritionTypes.OTHER.asString())) >= this.familyOtherCalories;
 
         return wgValidity && fvValidity && proValidity && otherValidity;
     }
@@ -139,7 +144,7 @@ class Algorithm {
     // The percentageToCalories method calculates the calories of a given nutrition.
 
     private double percentageToCalories(Map<String, String> foodItem, String nutrition) {
-        return 0.01 * Integer.parseInt(foodItem.get(nutrition)) * Integer.parseInt(foodItem.get("Calories"));
+        return 0.01 * Integer.parseInt(foodItem.get(nutrition)) * Integer.parseInt(foodItem.get(NutritionTypes.CALORIES.asString()));
     }
 
     // The combineHamperNutrition method combines an ArrayList of foodItems into one HashMap
@@ -154,18 +159,18 @@ class Algorithm {
         double other = 0;
 
         for (Map<String, String> foodItem : combination) {
-            calories += Double.parseDouble(foodItem.get("Calories"));
-            grainContent += percentageToCalories(foodItem, "GrainContent");
-            proContent += percentageToCalories(foodItem, "ProContent");
-            fvContent += percentageToCalories(foodItem, "FVContent");
-            other += percentageToCalories(foodItem, "Other");
+            calories += Double.parseDouble(foodItem.get(NutritionTypes.CALORIES.asString()));
+            grainContent += percentageToCalories(foodItem, NutritionTypes.WHOLE_GRAINS.asString());
+            proContent += percentageToCalories(foodItem, NutritionTypes.PROTEIN.asString());
+            fvContent += percentageToCalories(foodItem, NutritionTypes.FRUIT_VEGGIES.asString());
+            other += percentageToCalories(foodItem, NutritionTypes.OTHER.asString());
         }
 
-        combinedHamper.put("Calories", String.valueOf(calories));
-        combinedHamper.put("GrainContent", String.valueOf(grainContent));
-        combinedHamper.put("ProContent", String.valueOf(proContent));
-        combinedHamper.put("FVContent", String.valueOf(fvContent));
-        combinedHamper.put("Other", String.valueOf(other));
+        combinedHamper.put(NutritionTypes.CALORIES.asString(), String.valueOf(calories));
+        combinedHamper.put(NutritionTypes.WHOLE_GRAINS.asString(), String.valueOf(grainContent));
+        combinedHamper.put(NutritionTypes.PROTEIN.asString(), String.valueOf(proContent));
+        combinedHamper.put(NutritionTypes.FRUIT_VEGGIES.asString(), String.valueOf(fvContent));
+        combinedHamper.put(NutritionTypes.OTHER.asString(), String.valueOf(other));
 
         return combinedHamper;
     }
@@ -175,15 +180,6 @@ class Algorithm {
     private void deleteHamperFromDatabase(Database db, ArrayList<Map<String, String>> hamper) {
         for (Map<String, String> foodItem : hamper) {
             db.deleteFoodItem(foodItem.get("ItemID"));
-        }
-    }
-
-    // The printBestHamper method prints the best hamper
-
-    public void printBestHamper() {
-        System.out.println(combineHamperNutrition(this.bestHamper));
-        for (Map<String, String> foodItem : this.bestHamper) {
-            System.out.println(foodItem.get("Name"));
         }
     }
 }
