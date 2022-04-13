@@ -179,4 +179,7 @@ class Algorithm {
         return combinedHamper;
     }
 
+    public ArrayList<String> getUsedItemIDs() {
+        return usedItemIDs;
+    }
 }
