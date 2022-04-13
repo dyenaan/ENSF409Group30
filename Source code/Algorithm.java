@@ -31,16 +31,18 @@ class Algorithm {
     private double familyFVCalories;
     private double familyProCalories;
     private double familyOtherCalories;
-
+    private ArrayList<String> usedItemIDs;
     private ArrayList<Map<String, String>> bestHamper = new ArrayList<>();
 
-    public Algorithm(Person[] people) throws HamperAlreadyFoundException, StockNotAvailableException {
-        for (int i = 0; i < people.length; i++) {
-            familyTotalCalories += people[i].getNutrition(NutritionTypes.CALORIES);
-            familyWGCalories += 0.01 * people[i].getNutrition(NutritionTypes.WHOLE_GRAINS) * people[i].getNutrition(NutritionTypes.CALORIES);
-            familyFVCalories += 0.01 * people[i].getNutrition(NutritionTypes.FRUIT_VEGGIES) * people[i].getNutrition(NutritionTypes.CALORIES);
-            familyProCalories += 0.01 * people[i].getNutrition(NutritionTypes.PROTEIN) * people[i].getNutrition(NutritionTypes.CALORIES);
-            familyOtherCalories += 0.01 * people[i].getNutrition(NutritionTypes.OTHER) * people[i].getNutrition(NutritionTypes.CALORIES);
+    public Algorithm(Person[] people, ArrayList<String> usedItemIDs) throws HamperAlreadyFoundException, StockNotAvailableException {
+        this.usedItemIDs = usedItemIDs;
+
+        for (Person person : people) {
+            familyTotalCalories += person.getNutrition(NutritionTypes.CALORIES);
+            familyWGCalories += 0.01 * person.getNutrition(NutritionTypes.WHOLE_GRAINS) * person.getNutrition(NutritionTypes.CALORIES);
+            familyFVCalories += 0.01 * person.getNutrition(NutritionTypes.FRUIT_VEGGIES) * person.getNutrition(NutritionTypes.CALORIES);
+            familyProCalories += 0.01 * person.getNutrition(NutritionTypes.PROTEIN) * person.getNutrition(NutritionTypes.CALORIES);
+            familyOtherCalories += 0.01 * person.getNutrition(NutritionTypes.OTHER) * person.getNutrition(NutritionTypes.CALORIES);
         }
 
         Database db = new Database("jdbc:mysql://localhost/food_inventory", "student", "ensf");
@@ -73,18 +75,16 @@ class Algorithm {
     // The findBestHamper method calls the appropriate methods to generate the best hamper possible. It also checks
     // if there is enough stock and deletes the items from the database if a hamper is possible.
 
-    private ArrayList<Map<String, String>> findBestHamper(Database db) throws StockNotAvailableException, HamperAlreadyFoundException {
+    private void findBestHamper(Database db) throws StockNotAvailableException, HamperAlreadyFoundException {
         if (this.bestHamper.isEmpty()) {
             ArrayList<Map<String, String>> combination = new ArrayList<>();
 
-            for (int combinationLength = 1; combinationLength <= db.getItemLength(); combinationLength++) {
-                findFoodCombinations(db, combination, 0, db.getItemLength() - 1, 0, combinationLength);
+            for (int combinationLength = 1; combinationLength <= db.getItemLength() - usedItemIDs.size(); combinationLength++) {
+                findFoodCombinations(db, combination, 0, db.getItemLength() - usedItemIDs.size() - 1, 0, combinationLength);
             }
 
             if (this.bestHamper.isEmpty())
                 throw new StockNotAvailableException("The available stock isn't sufficient enough to create a hamper!");
-            deleteHamperFromDatabase(db, this.bestHamper);
-            return this.bestHamper;
 
         } else {
             throw new HamperAlreadyFoundException("The best hamper for the family was already found!");
@@ -102,7 +102,9 @@ class Algorithm {
 
             double bestHamperDiff = Double.parseDouble(combinedBestHamper.get(NutritionTypes.CALORIES.asString())) - this.familyTotalCalories;
             double combinationDiff = Double.parseDouble(combinedCombination.get(NutritionTypes.CALORIES.asString())) - this.familyTotalCalories;
-            if (combinationDiff < bestHamperDiff) this.bestHamper = new ArrayList<>(combination);
+            if (combinationDiff < bestHamperDiff) {
+                this.bestHamper = new ArrayList<>(combination);
+            }
         }
     }
 
@@ -129,12 +131,14 @@ class Algorithm {
             return;
         }
 
-        String[] itemIDs = db.getItemIDs();
+        ArrayList<String> itemIDs = db.getItemIDs();
+        itemIDs.removeAll(usedItemIDs);
+
         for (int i = start; i <= end && end - i + 1 >= combinationLength - index; i++) {
             try {
-                combination.set(index, db.selectFoodItem(itemIDs[i]));
+                combination.set(index, db.selectFoodItem(itemIDs.get(i)));
             } catch (IndexOutOfBoundsException e) {
-                combination.add(db.selectFoodItem(itemIDs[i]));
+                combination.add(db.selectFoodItem(itemIDs.get(i)));
             } catch (IllegalArgumentException ignore) {
             }
             findFoodCombinations(db, combination, i + 1, end, index + 1, combinationLength);
@@ -175,11 +179,4 @@ class Algorithm {
         return combinedHamper;
     }
 
-    // The deleteHamperFromDatabase method deletes a given hamper from the database
-
-    private void deleteHamperFromDatabase(Database db, ArrayList<Map<String, String>> hamper) {
-        for (Map<String, String> foodItem : hamper) {
-            db.deleteFoodItem(foodItem.get("ItemID"));
-        }
-    }
 }

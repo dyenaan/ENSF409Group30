@@ -1,6 +1,7 @@
 package edu.ucalgary.ensf409;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -106,7 +107,7 @@ public class Database {
         return map;
     }
 
-    public void updateItemLength() {
+    private void updateItemLength() {
         int length = 0;
         try {
             String query = "SELECT * FROM AVAILABLE_FOOD";
@@ -143,18 +144,16 @@ public class Database {
         }
     }
 
-    public String[] getItemIDs() {
-        String[] itemIDs = new String[this.getItemLength()];
+    public ArrayList<String> getItemIDs() {
+        ArrayList<String> itemIDs = new ArrayList<>();
         try {
             String query = "SELECT * FROM AVAILABLE_FOOD";
 
             Statement myStmt = dbConnect.createStatement();
             results = myStmt.executeQuery(query);
 
-            int i = 0;
             while (results.next()) {
-                itemIDs[i] = results.getString("ItemID");
-                i++;
+                itemIDs.add(results.getString("ItemID"));
             }
 
             myStmt.close();

@@ -7,10 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class GUIOrderID extends JFrame implements ActionListener, MouseListener {
 
@@ -50,10 +47,10 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener 
         cUELabel = new JLabel("Child Under Eight:");
         cOELabel = new JLabel("Child Over Eight:");
 
-        mCInput = new JTextField("e.g. 2", 3);
-        fCInput = new JTextField("e.g. 3", 3);
-        cUEInput = new JTextField("e.g. 1", 3);
-        cOEInput = new JTextField("e.g. 2", 3);
+        mCInput = new JTextField("e.g. 1", 3);
+        fCInput = new JTextField("e.g. 2", 3);
+        cUEInput = new JTextField("e.g. 3", 3);
+        cOEInput = new JTextField("e.g. 4", 3);
 
         mCInput.addMouseListener(this);
         fCInput.addMouseListener(this);
@@ -82,18 +79,25 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener 
             public void actionPerformed(ActionEvent e) {
                 if (!orderList.isEmpty()) {
                     try {
-                        JOptionPane.showMessageDialog(finishOrder, "The order is successfully finished! The order ID is " + idProcessing());
+                        String orderID = generateOrderID();
+                        JOptionPane.showMessageDialog(finishOrder, "The order is successfully finished! The order ID is " + orderID);
+                        finishOrder.setEnabled(false);
+                        submitHamper.setEnabled(false);
                         Order order = new Order(orderList);
-                        OutputToFile output = new OutputToFile();
-                        output.writeFile("test", order.getFamilies());
-                    } catch (HamperAlreadyFoundException ex) {
+                        OutputToFile output = new OutputToFile(orderID);
+
+                        if (order.getOrderCompleted()) {
+                            output.createOrderForm(order.getFamilies());
+                            JOptionPane.showMessageDialog(finishOrder, "Order form successfully created!");
+                        } else JOptionPane.showMessageDialog(finishOrder, "There isn't enough stock to complete the order!");
+
+                    } catch (HamperAlreadyFoundException | IOException ex) {
                         JOptionPane.showMessageDialog(finishOrder, "The program encountered an error!");
-                    } catch (StockNotAvailableException ex) {
-                        JOptionPane.showMessageDialog(finishOrder, "There isn't enough stock to complete the order!");
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
+                    } catch (StockNotAvailableException ignore) {}
                 } else JOptionPane.showMessageDialog(finishOrder, "the order list is empty!");
+
+                finishOrder.setEnabled(true);
+                submitHamper.setEnabled(true);
                 orderList = new ArrayList<>();
             }
         });
@@ -128,19 +132,19 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener 
     }
 
     public int getMaleCount() {
-        return Integer.parseInt(mCInput.getText());
+        return maleCount;
     }
 
     public int getFemaleCount() {
-        return Integer.parseInt(fCInput.getText());
+        return femaleCount;
     }
 
     public int getChildUECount() {
-        return Integer.parseInt(cUEInput.getText());
+        return childUECount;
     }
 
     public int getChildOECount() {
-        return Integer.parseInt(cOEInput.getText());
+        return childOECount;
     }
 
     public void mouseClicked(MouseEvent event) {
@@ -162,61 +166,47 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener 
     public void mouseReleased(MouseEvent event) {
     }
 
-    // @TODO : Generate a random number for the order ID
-    private String idProcessing() {
-        String orderID = getMaleCount() + "" + getFemaleCount() + "" + getChildUECount() + "" + getChildOECount();
-        return orderID;
+    private String generateOrderID() {
+        Random random = new Random();
+        int upperbound = 999_999_999;
+        int lowerbound = 100_00_000;
+        return String.valueOf(random.nextInt(upperbound - lowerbound) + lowerbound);
     }
 
-    private boolean validateInput() throws IllegalArgumentException {
-
+    private boolean validateInput() {
         boolean allInputValid = true;
 
-        try {
-            Integer.parseInt(mCInput.getText());
-        } catch(NumberFormatException e){
-            allInputValid = false;
-        }
+        if (validateString(mCInput.getText())) {
+            maleCount = Integer.parseInt(mCInput.getText());
+        } else allInputValid = false;
 
-        try {
-            Integer.parseInt(fCInput.getText());
-        } catch(NumberFormatException e){
-            allInputValid = false;
-        }
+        if (validateString(fCInput.getText())) {
+            femaleCount = Integer.parseInt(fCInput.getText());
+        } else allInputValid = false;
 
-        try {
-            Integer.parseInt(cOEInput.getText());
-        } catch(NumberFormatException e){
-            allInputValid = false;
-        }
+        if (validateString(cUEInput.getText())) {
+            childUECount = Integer.parseInt(cUEInput.getText());
+        } else allInputValid = false;
 
-        try {
-            Integer.parseInt(cUEInput.getText());
-        } catch(NumberFormatException e){
-            allInputValid = false;
-        }
+        if (validateString(cOEInput.getText())) {
+            childOECount = Integer.parseInt(cOEInput.getText());
+        } else allInputValid = false;
 
-        if (getMaleCount() < 0) {
-            allInputValid = false;
-            //JOptionPane.showMessageDialog(this, maleCount + " is an invalid input.");
+        if (allInputValid) {
+            if (maleCount < 0) allInputValid = false;
+            if (femaleCount < 0) allInputValid = false;
+            if (childUECount < 0) allInputValid = false;
+            if (childOECount < 0) allInputValid = false;
         }
-
-        if (getFemaleCount() < 0) {
-            allInputValid = false;
-            //JOptionPane.showMessageDialog(this, femaleCount + " is an invalid input.");
-        }
-
-        if (getChildUECount() < 0) {
-            allInputValid = false;
-            //JOptionPane.showMessageDialog(this, childUECount + " is an invalid input.");
-        }
-
-        if (getChildOECount() < 0) {
-            allInputValid = false;
-            //JOptionPane.showMessageDialog(this, childOECount + " is an invalid input.");
-        }
-
         return allInputValid;
     }
 
+    private boolean validateString(String textBoxInput) {
+        try {
+            Integer.parseInt(textBoxInput);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 }
