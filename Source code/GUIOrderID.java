@@ -87,7 +87,7 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener 
                         OutputToFile output = new OutputToFile(orderID);
 
                         if (order.getOrderCompleted()) {
-                            output.createOrderForm(order.getFamilies());
+                            output.createOrderForm(order);
                             JOptionPane.showMessageDialog(finishOrder, "Order form successfully created!");
                         } else JOptionPane.showMessageDialog(finishOrder, "There isn't enough stock to complete the order!");
 
@@ -197,16 +197,21 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener 
             if (femaleCount < 0) allInputValid = false;
             if (childUECount < 0) allInputValid = false;
             if (childOECount < 0) allInputValid = false;
+            if (maleCount == 0 && femaleCount == 0 && childOECount == 0 && childUECount == 0) allInputValid = false;
         }
         return allInputValid;
     }
 
-    private boolean validateString(String textBoxInput) {
+    public boolean validateString(String textBoxInput) {
         try {
             Integer.parseInt(textBoxInput);
             return true;
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    public ArrayList<Map<String,String>> getOrderList() {
+        return this.orderList;
     }
 }
