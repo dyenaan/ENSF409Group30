@@ -18,10 +18,10 @@ public class Order {
         families = new Family[orderList.size()];
         try {
             for (int i = 0; i < orderList.size(); i++) {
-                int maleCount = Integer.parseInt(orderList.get(i).get(ClientTypes.MALE.toString()));
-                int femaleCount = Integer.parseInt(orderList.get(i).get(ClientTypes.FEMALE.toString()));
-                int childUECount = Integer.parseInt(orderList.get(i).get(ClientTypes.CHILDUE.toString()));
-                int childOECount = Integer.parseInt(orderList.get(i).get(ClientTypes.CHILDOE.toString()));
+                int maleCount = Integer.parseInt(orderList.get(i).get(ClientTypes.MALE.asString()));
+                int femaleCount = Integer.parseInt(orderList.get(i).get(ClientTypes.FEMALE.asString()));
+                int childUECount = Integer.parseInt(orderList.get(i).get(ClientTypes.CHILDUE.asString()));
+                int childOECount = Integer.parseInt(orderList.get(i).get(ClientTypes.CHILDOE.asString()));
                 families[i] = new Family(maleCount, femaleCount, childUECount, childOECount, usedItemIDs);
             }
             deleteOrderFromDatabase();

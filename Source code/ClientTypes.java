@@ -9,24 +9,24 @@ public enum ClientTypes {
         public int clientID() {
             return 1;
         }
-        public String toString() { return "Male"; }
+        public String asString() { return "Male"; }
     }, FEMALE {
         public int clientID() {
             return 2;
         }
-        public String toString() { return "Female"; }
+        public String asString() { return "Female"; }
     }, CHILDOE {
         public int clientID() {
             return 3;
         }
-        public String toString() { return "ChildOE"; }
+        public String asString() { return "ChildOE"; }
     }, CHILDUE {
         public int clientID() {
             return 4;
         }
-        public String toString() { return "ChildUE"; }
+        public String asString() { return "ChildUE"; }
 
     };
     public abstract int clientID();
-    public abstract String toString();
+    public abstract String asString();
 }
