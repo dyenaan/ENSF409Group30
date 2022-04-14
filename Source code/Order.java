@@ -3,6 +3,11 @@ package edu.ucalgary.ensf409;
 import java.util.ArrayList;
 import java.util.Map;
 
+/*
+ * The order class creates a family class for each hamper and stores them into a family array.
+ * The order class is also responsible for deleting all the items after each best hamper is found
+ */
+
 public class Order {
 
     private final Family[] families;
@@ -29,6 +34,8 @@ public class Order {
     public Family[] getFamilies() {
         return families;
     }
+
+    // deletes the items of each best hamper that have been previously found.
 
     private void deleteOrderFromDatabase() {
         Database db = new Database("jdbc:mysql://localhost/food_inventory", "student", "ensf");
