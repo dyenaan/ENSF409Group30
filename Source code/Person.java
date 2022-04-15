@@ -1,6 +1,7 @@
 package edu.ucalgary.ensf409;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class Person {
     private final int CLIENT_ID;
@@ -24,21 +25,13 @@ public class Person {
         this.OTHER = Integer.parseInt(clientNeeds.get("Other"));
     }
 
-    public double getNutrition(NutritionTypes type) {
-        switch (type) {
-            case CALORIES:
-                return this.CALORIES;
-            case WHOLE_GRAINS:
-                return this.WHOLE_GRAINS;
-            case FRUIT_VEGGIES:
-                return this.FRUIT_VEGGIES;
-            case PROTEIN:
-                return this.PROTEIN;
-            case OTHER:
-                return this.OTHER;
-            default:
-                throw new IllegalArgumentException("Did not recognize input");
-        }
+    public double getNutrition(String type) {
+        if (Objects.equals(type, NutritionTypes.CALORIES.asString())) return this.CALORIES;
+        else if (Objects.equals(type, NutritionTypes.WHOLE_GRAINS.asString())) return this.WHOLE_GRAINS;
+        else if (Objects.equals(type, NutritionTypes.FRUIT_VEGGIES.asString())) return this.FRUIT_VEGGIES;
+        else if (Objects.equals(type, NutritionTypes.PROTEIN.asString())) return this.PROTEIN;
+        else if (Objects.equals(type, NutritionTypes.OTHER.asString())) return this.OTHER;
+        else throw new IllegalArgumentException("Did not recognize input!");
     }
     public int getClientID() {
         return this.CLIENT_ID;

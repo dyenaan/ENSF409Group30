@@ -3,27 +3,28 @@ package edu.ucalgary.ensf409;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /*
-*   The purpose of the following algorithm is to find the best hamper possible given a database of food items.
-*
-*   The algorithm requires an array of person objects so that it could calculate the total amount of nutritional contents
-*   needed.
-*
-*   The method findBestHamper needs to be called so that the program finds the best hamper. The findBestHamper
-*   method creates every food combination possible. The method then looks for the best food combination possible
-*   and saves it to the bestHamper variable. The method uses multiple helper methods to find the best hamper, including
-*   findFoodCombinations, checkCombinationValidity, and checkCurrentHamper.
-*
-*   Descriptions of said helper methods:
-*
-*   checkCombinationValidity: Checks if the combination at least satisfies the nutritional contents needed.
-*
-*   findFoodCombinations: Generates all possible combination of foods of a given length.
-*
-*   checkCurrentCombination: Checks if the current combination creates less waste than the current best hamper or not.
-*   If the current combination creates less weight, then it becomes the best hamper.
-*/
+ *   The purpose of the following algorithm is to find the best hamper possible given a database of food items.
+ *
+ *   The algorithm requires an array of person objects so that it could calculate the total amount of nutritional contents
+ *   needed.
+ *
+ *   The method findBestHamper needs to be called so that the program finds the best hamper. The findBestHamper
+ *   method creates every food combination possible. The method then looks for the best food combination possible
+ *   and saves it to the bestHamper variable. The method uses multiple helper methods to find the best hamper, including
+ *   findFoodCombinations, checkCombinationValidity, and checkCurrentHamper.
+ *
+ *   Descriptions of said helper methods:
+ *
+ *   checkCombinationValidity: Checks if the combination at least satisfies the nutritional contents needed.
+ *
+ *   findFoodCombinations: Generates all possible combination of foods of a given length.
+ *
+ *   checkCurrentCombination: Checks if the current combination creates less waste than the current best hamper or not.
+ *   If the current combination creates less weight, then it becomes the best hamper.
+ */
 
 class Algorithm {
     private double familyTotalCalories;
@@ -35,14 +36,16 @@ class Algorithm {
     private ArrayList<Map<String, String>> bestHamper = new ArrayList<>();
 
     public Algorithm(Person[] people, ArrayList<String> usedItemIDs) throws HamperAlreadyFoundException, StockNotAvailableException {
-        this.usedItemIDs = usedItemIDs;
+        if (people.length == 0) throw new IllegalArgumentException();
 
+        this.usedItemIDs = usedItemIDs;
         for (Person person : people) {
-            familyTotalCalories += person.getNutrition(NutritionTypes.CALORIES);
-            familyWGCalories += 0.01 * person.getNutrition(NutritionTypes.WHOLE_GRAINS) * person.getNutrition(NutritionTypes.CALORIES);
-            familyFVCalories += 0.01 * person.getNutrition(NutritionTypes.FRUIT_VEGGIES) * person.getNutrition(NutritionTypes.CALORIES);
-            familyProCalories += 0.01 * person.getNutrition(NutritionTypes.PROTEIN) * person.getNutrition(NutritionTypes.CALORIES);
-            familyOtherCalories += 0.01 * person.getNutrition(NutritionTypes.OTHER) * person.getNutrition(NutritionTypes.CALORIES);
+            double calories = person.getNutrition(NutritionTypes.CALORIES.asString());
+            familyTotalCalories += calories;
+            familyWGCalories += 0.01 * person.getNutrition(NutritionTypes.WHOLE_GRAINS.asString()) * calories;
+            familyFVCalories += 0.01 * person.getNutrition(NutritionTypes.FRUIT_VEGGIES.asString()) * calories;
+            familyProCalories += 0.01 * person.getNutrition(NutritionTypes.PROTEIN.asString()) * calories;
+            familyOtherCalories += 0.01 * person.getNutrition(NutritionTypes.OTHER.asString()) * calories;
         }
 
         Database db = new Database("jdbc:mysql://localhost/food_inventory", "student", "ensf");
@@ -51,25 +54,24 @@ class Algorithm {
         db.close();
     }
 
+    // The getFamilyNutritionCalories works a getter for multiple variables. Inputting the type of nutrition as
+    // an argument will return the variable of choice.
+
+    public double getFamilyCalories(String type) {
+        if (Objects.equals(type, NutritionTypes.CALORIES.asString())) return this.familyTotalCalories;
+        else if (Objects.equals(type, NutritionTypes.WHOLE_GRAINS.asString())) return this.familyWGCalories;
+        else if (Objects.equals(type, NutritionTypes.FRUIT_VEGGIES.asString())) return this.familyWGCalories;
+        else if (Objects.equals(type, NutritionTypes.PROTEIN.asString())) return this.familyProCalories;
+        else if (Objects.equals(type, NutritionTypes.OTHER.asString())) return this.familyOtherCalories;
+        else throw new IllegalArgumentException("Did not recognize input!");
+    }
+
     public ArrayList<Map<String, String>> getBestHamper() {
         return this.bestHamper;
     }
 
-    public double getFamilyNutritionCalories(NutritionTypes type) {
-        switch (type) {
-            case CALORIES:
-                return familyTotalCalories;
-            case WHOLE_GRAINS:
-                return familyWGCalories;
-            case FRUIT_VEGGIES:
-                return familyFVCalories;
-            case PROTEIN:
-                return familyProCalories;
-            case OTHER:
-                return familyOtherCalories;
-            default:
-                throw new IllegalArgumentException("Did not recognize input");
-        }
+    public ArrayList<String> getUsedItemIDs() {
+        return usedItemIDs;
     }
 
     // The findBestHamper method calls the appropriate methods to generate the best hamper possible. It also checks
@@ -177,9 +179,5 @@ class Algorithm {
         combinedHamper.put(NutritionTypes.OTHER.asString(), String.valueOf(other));
 
         return combinedHamper;
-    }
-
-    public ArrayList<String> getUsedItemIDs() {
-        return usedItemIDs;
     }
 }
