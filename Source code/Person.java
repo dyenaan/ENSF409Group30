@@ -12,6 +12,7 @@ public class Person {
     private final int OTHER;
 
     Person(int clientID) {
+        if (!validateClientID(clientID)) throw new IllegalArgumentException();
         Database db = new Database("jdbc:mysql://localhost/food_inventory", "student", "ensf");
         db.initializeConnection();
         Map<String, String> clientNeeds = db.selectClientNeeds(String.valueOf(clientID));
@@ -33,6 +34,15 @@ public class Person {
         else if (Objects.equals(type, NutritionTypes.OTHER.asString())) return this.OTHER;
         else throw new IllegalArgumentException("Did not recognize input!");
     }
+
+    private boolean validateClientID(int clientID) {
+        if (clientID == ClientTypes.MALE.clientID()) return true;
+        else if (clientID == ClientTypes.FEMALE.clientID()) return true;
+        else if (clientID == ClientTypes.CHILDOE.clientID()) return true;
+        else if (clientID == ClientTypes.CHILDUE.clientID()) return true;
+        else return false;
+    }
+
     public int getClientID() {
         return this.CLIENT_ID;
     }
