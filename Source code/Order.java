@@ -15,6 +15,8 @@ public class Order {
     private boolean orderCompleted = false;
 
     public Order(ArrayList<Map<String, String>> orderList) throws HamperAlreadyFoundException, StockNotAvailableException {
+        if (!validateOrderList(orderList)) throw new IllegalArgumentException();
+
         families = new Family[orderList.size()];
         try {
             for (int i = 0; i < orderList.size(); i++) {
@@ -23,6 +25,7 @@ public class Order {
                 int childUECount = Integer.parseInt(orderList.get(i).get(ClientTypes.CHILDUE.asString()));
                 int childOECount = Integer.parseInt(orderList.get(i).get(ClientTypes.CHILDOE.asString()));
                 families[i] = new Family(maleCount, femaleCount, childUECount, childOECount, usedItemIDs);
+                families[i].findBestHamper();
             }
             deleteOrderFromDatabase();
             orderCompleted = true;
@@ -33,6 +36,10 @@ public class Order {
 
     public Family[] getFamilies() {
         return families;
+    }
+
+    public boolean getOrderCompleted() {
+        return orderCompleted;
     }
 
     // deletes the items of each best hamper that have been previously found.
@@ -46,8 +53,22 @@ public class Order {
         db.close();
     }
 
-    public boolean getOrderCompleted() {
-        return orderCompleted;
+    // @TODO : Find a more elegant way of validating the orderList
+    private boolean validateOrderList(ArrayList<Map<String, String>> orderList) {
+        if (orderList.isEmpty()) return false;
+        else {
+            for (Map<String, String> clients : orderList) {
+                if (!clients.containsKey(ClientTypes.MALE.asString())) return false;
+                if (!clients.containsKey(ClientTypes.FEMALE.asString())) return false;
+                if (!clients.containsKey(ClientTypes.CHILDOE.asString())) return false;
+                if (!clients.containsKey(ClientTypes.CHILDUE.asString())) return false;
+                if (Integer.parseInt(clients.get(ClientTypes.MALE.asString())) < 0) return false;
+                if (Integer.parseInt(clients.get(ClientTypes.FEMALE.asString())) < 0) return false;
+                if (Integer.parseInt(clients.get(ClientTypes.CHILDUE.asString())) < 0) return false;
+                if (Integer.parseInt(clients.get(ClientTypes.CHILDOE.asString())) < 0) return false;
+            }
+        }
+        return true;
     }
 }
 
