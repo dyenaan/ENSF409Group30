@@ -60,7 +60,7 @@ class Algorithm {
     public double getFamilyCalories(String type) {
         if (Objects.equals(type, NutritionTypes.CALORIES.asString())) return this.familyTotalCalories;
         else if (Objects.equals(type, NutritionTypes.WHOLE_GRAINS.asString())) return this.familyWGCalories;
-        else if (Objects.equals(type, NutritionTypes.FRUIT_VEGGIES.asString())) return this.familyWGCalories;
+        else if (Objects.equals(type, NutritionTypes.FRUIT_VEGGIES.asString())) return this.familyFVCalories;
         else if (Objects.equals(type, NutritionTypes.PROTEIN.asString())) return this.familyProCalories;
         else if (Objects.equals(type, NutritionTypes.OTHER.asString())) return this.familyOtherCalories;
         else throw new IllegalArgumentException("Did not recognize input!");
