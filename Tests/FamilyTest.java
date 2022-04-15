@@ -6,24 +6,22 @@ import org.junit.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+/*
+ * Important note: There must be enough food items for at least one adult male for the tests to work properly!
+ */
 
 public class FamilyTest{
 	
 	ArrayList<Map<String, String>> BEST_HAMPER = new ArrayList<Map<String, String>>();
+	ArrayList<String> currentUsedItems = new ArrayList<String>();
 	
-	Map<String, String> hamp1= new HashMap<String, String>();
-	Map<String, String> hamp2= new HashMap<String, String>();
-	Map<String, String> hamp3= new HashMap<String, String>();
-	
-	ArrayList<String> Hamp_List = new ArrayList<String>();
-	
-	int mCount = 2;
+	int mCount = 1;
 	int invMCount = -2;
-	int fCount = 2;
+	int fCount = 0;
 	int invFCount = -2;
-	int uECount = 1; 
+	int uECount = 0;
 	int invUECount = -1;
-	int oECount = 3;
+	int oECount = 0;
 	int invOECount = -3;
 	
 	@Test
@@ -32,7 +30,7 @@ public class FamilyTest{
 		boolean correctException = false;
 
         try{
-			Family family = new Family(invMCount,fCount,uECount,oECount, Hamp_List);
+			Family family = new Family(invMCount,fCount,uECount,oECount, currentUsedItems);
         }
         catch(IllegalArgumentException e){
             correctException = true;
@@ -44,7 +42,7 @@ public class FamilyTest{
 	@Test
 	public void testFamilyConstructorValidInput() throws HamperAlreadyFoundException, StockNotAvailableException{
 		
-        Family family = new Family(mCount,fCount,uECount,oECount, Hamp_List);
+        Family family = new Family(mCount,fCount,uECount,oECount, currentUsedItems);
         assertNotNull("Family constructor did not create an object when given a valid count:", family);
     }
 	
@@ -52,7 +50,7 @@ public class FamilyTest{
 	@Test
     public void testFamilyGetPeople() throws HamperAlreadyFoundException, StockNotAvailableException{
 		
-		Family nfamily = new Family(mCount,fCount,uECount,oECount, Hamp_List);
+		Family nfamily = new Family(mCount,fCount,uECount,oECount, currentUsedItems);
 		Person[] people = nfamily.getPeople();
 		
 		assertNotNull("Method getPeople did not return an object of type person: " , people);
@@ -60,37 +58,26 @@ public class FamilyTest{
 	
 	@Test
 	public void testFamilyGetHamper() throws HamperAlreadyFoundException, StockNotAvailableException{
-		
-		hamp1.put("Tries", "Breaks");
-		hamp1.put("Tries", "Breaks");
-		hamp1.put("Tries", "Breaks");
-		hamp1.put("Tries", "Breaks");
-		hamp2.put("Tries", "Breaks");
-		hamp2.put("Tries", "Breaks");
-		hamp2.put("Tries", "Breaks");
-		hamp3.put("Tries", "Breaks");
-		hamp3.put("Tries", "Breaks");
-		
-		BEST_HAMPER.add(hamp1);
-		BEST_HAMPER.add(hamp2);
-		BEST_HAMPER.add(hamp3);
-		
-		for (Map<String, String> foodItem : BEST_HAMPER) {
-            Hamp_List.add(foodItem.get("Tries"));
-        }
-		
-		Family nfamily = new Family(mCount,fCount,uECount,oECount, Hamp_List);
-		
-		
-		ArrayList<Map<String, String>> hmap;
-		
-		hmap = nfamily.getHamper();
-		
-		assertEquals("Method getHamper did not return the expected result: " ,BEST_HAMPER, hmap);
-		
-		
+		Family nfamily = new Family(mCount,fCount,uECount,oECount, new ArrayList<String>());
+		nfamily.findBestHamper();
+
+		ArrayList<Map<String, String>> bestHamper = nfamily.getHamper();
+		assertNotNull("Method getHamper did not return the best hamper: " , bestHamper);
 	}
 
+	@Test
+	public void testFamilyGetClientCount() throws HamperAlreadyFoundException, StockNotAvailableException{
+		Family nfamily = new Family(mCount,fCount,uECount,oECount, new ArrayList<String>());
+		int maleCount = nfamily.getClientCount(ClientTypes.MALE);
+		int femaleCount = nfamily.getClientCount(ClientTypes.FEMALE);
+		int childOECount = nfamily.getClientCount(ClientTypes.CHILDOE);
+		int childUECount = nfamily.getClientCount(ClientTypes.CHILDUE);
+
+		assertEquals("The male count value does not match the right value: ", maleCount, mCount);
+		assertEquals("The female count value does not match the right value: ", femaleCount, fCount);
+		assertEquals("The childUE count value does not match the right value: ", childUECount, uECount);
+		assertEquals("The childOE count value does not match the right value: ", childOECount, oECount);
+	}
 
 }
 	
