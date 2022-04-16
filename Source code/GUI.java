@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.util.*;
 
 public class GUI extends JFrame implements ActionListener, MouseListener {
@@ -87,12 +88,15 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
 
                         if (order.getOrderCompleted()) {
                             JOptionPane.showMessageDialog(finishOrder, "Order form successfully created!");
+                            output.createOrderForm(order);
                             JOptionPane.showMessageDialog(finishOrder, createBestHamperString(order));
                         } else JOptionPane.showMessageDialog(finishOrder, "There isn't enough stock to complete the order!");
 
                     } catch (HamperAlreadyFoundException ex) {
                         JOptionPane.showMessageDialog(finishOrder, "The program encountered an error!");
-                    } catch (StockNotAvailableException ignore) {}
+                    } catch (StockNotAvailableException ignore) {} catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 } else JOptionPane.showMessageDialog(finishOrder, "the order list is empty!");
 
                 finishOrder.setEnabled(true);
