@@ -226,7 +226,6 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
                 bestHamperString.append(itemID).append("\t\t").append(name).append("\n");
             }
         }
-        System.out.println(bestHamperString.toString());
         return bestHamperString.toString();
     }
 
