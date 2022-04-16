@@ -87,11 +87,11 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener 
                         OutputToFile output = new OutputToFile(orderID);
 
                         if (order.getOrderCompleted()) {
-                            output.createOrderForm(order);
                             JOptionPane.showMessageDialog(finishOrder, "Order form successfully created!");
+                            JOptionPane.showMessageDialog(finishOrder, createBestHamperString(order));
                         } else JOptionPane.showMessageDialog(finishOrder, "There isn't enough stock to complete the order!");
 
-                    } catch (HamperAlreadyFoundException | IOException ex) {
+                    } catch (HamperAlreadyFoundException ex) {
                         JOptionPane.showMessageDialog(finishOrder, "The program encountered an error!");
                     } catch (StockNotAvailableException ignore) {}
                 } else JOptionPane.showMessageDialog(finishOrder, "the order list is empty!");
@@ -202,13 +202,29 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener 
         return allInputValid;
     }
 
-    public boolean validateString(String textBoxInput) {
+    private boolean validateString(String textBoxInput) {
         try {
             Integer.parseInt(textBoxInput);
             return true;
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    private String createBestHamperString(Order order) {
+        StringBuilder bestHamperString = new StringBuilder();
+        for (int i = 0; i < order.getFamilies().length; i++) {
+            if (i > 0) bestHamperString.append("\n\n");
+            bestHamperString.append("Hamper " + (i + 1) + " items:\n");
+            ArrayList<Map<String,String>> bestHamper = order.getFamilies()[i].getHamper();
+            for (Map<String, String> foodItem : bestHamper) {
+                String name = foodItem.get("Name");
+                String itemID = foodItem.get("ItemID");
+                bestHamperString.append(itemID).append("\t\t").append(name).append("\n");
+            }
+        }
+        System.out.println(bestHamperString.toString());
+        return bestHamperString.toString();
     }
 
     public ArrayList<Map<String,String>> getOrderList() {
