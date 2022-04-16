@@ -57,19 +57,12 @@ public class Family{
 		return this.bestHamper;
 	}
 
-    public int getClientCount(ClientTypes type) {
-        switch (type) {
-            case MALE:
-                return this.MALE_COUNT;
-            case FEMALE:
-                return this.FEMALE_COUNT;
-            case CHILDOE:
-                return this.CHILDOE_COUNT;
-            case CHILDUE:
-                return this.CHILDUE_COUNT;
-            default:
-                throw new IllegalArgumentException("Did not recognize input");
-        }
+    public int getClientCount(String type) {
+        if (type.equals(ClientTypes.MALE.asString())) return this.MALE_COUNT;
+        else if (type.equals(ClientTypes.FEMALE.asString())) return this.FEMALE_COUNT;
+        else if (type.equals(ClientTypes.CHILDUE.asString())) return this.CHILDUE_COUNT;
+        else if (type.equals(ClientTypes.CHILDOE.asString())) return this.CHILDOE_COUNT;
+        else throw new IllegalArgumentException("Did not recognize input");
     }
 
     public ArrayList<String> getCurrentUsedItemIDs() {
