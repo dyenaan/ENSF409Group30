@@ -9,6 +9,8 @@ public class PersonTest{
 	
 	int validClientID = 1;
 	int negativeClientID = -2;
+	int invalidClientID = 5;
+	NutritionTypes nut;
 	
 	@Test
     public void testPersonConstructorValidInput() {
@@ -48,35 +50,35 @@ public class PersonTest{
     @Test
     public void testPersonGetCalories() {
         Person person = new Person(validClientID);
-        int foundNumber = person.getNutrition("Calories");
+        int foundNumber = (int)person.getNutrition(nut.CALORIES);
         assertNotNull("Method getNutrition did not return client calories value: ", foundNumber);
     }
 
     @Test
     public void testPersonGetWholeGrains() {
         Person person = new Person(validClientID);
-        int foundNumber = person.getNutrition("WholeGrains");
+        int foundNumber = (int)person.getNutrition(nut.WHOLE_GRAINS);
         assertNotNull("Method getNutrition did not return client whole grain value: ", foundNumber);
     }
 
     @Test
     public void testPersonGetProtein() {
         Person person = new Person(validClientID);
-        int foundNumber = person.getNutrition("Protein");
+        int foundNumber = (int)person.getNutrition(nut.PROTEIN);
         assertNotNull("Method getNutrition did not return client protein value: ", foundNumber);
     }
 
     @Test
     public void testPersonGetFruitVeggies() {
         Person person = new Person(validClientID);
-        int foundNumber = person.getNutrition("FruitVeggies");
+        int foundNumber = (int)person.getNutrition(nut.FRUIT_VEGGIES);
         assertNotNull("Method getNutrition did not return client fruit veggies value: ", foundNumber);
     }
 
     @Test
     public void testPersonGetOther() {
         Person person = new Person(validClientID);
-        int foundNumber = person.getNutrition("Other");
+        int foundNumber = (int)person.getNutrition(nut.OTHER);
         assertNotNull("Method getNutrition did not return other value: ", foundNumber);
     }
 
