@@ -66,17 +66,33 @@ public class FamilyTest{
 	}
 
 	@Test
-	public void testFamilyGetClientCount() throws HamperAlreadyFoundException, StockNotAvailableException{
+	public void testFamilyValidGetClientCount() throws HamperAlreadyFoundException, StockNotAvailableException{
 		Family nfamily = new Family(mCount,fCount,uECount,oECount, new ArrayList<String>());
-		int maleCount = nfamily.getClientCount(ClientTypes.MALE);
-		int femaleCount = nfamily.getClientCount(ClientTypes.FEMALE);
-		int childOECount = nfamily.getClientCount(ClientTypes.CHILDOE);
-		int childUECount = nfamily.getClientCount(ClientTypes.CHILDUE);
+		int maleCount = nfamily.getClientCount(ClientTypes.MALE.asString());
+		int femaleCount = nfamily.getClientCount(ClientTypes.FEMALE.asString());
+		int childOECount = nfamily.getClientCount(ClientTypes.CHILDOE.asString());
+		int childUECount = nfamily.getClientCount(ClientTypes.CHILDUE.asString());
 
 		assertEquals("The male count value does not match the right value: ", maleCount, mCount);
 		assertEquals("The female count value does not match the right value: ", femaleCount, fCount);
 		assertEquals("The childUE count value does not match the right value: ", childUECount, uECount);
 		assertEquals("The childOE count value does not match the right value: ", childOECount, oECount);
+	}
+
+	@Test
+	public void testFamilyInvalidGetClientCount() throws HamperAlreadyFoundException, StockNotAvailableException{
+		boolean correctException = false;
+		Family nfamily = new Family(mCount,fCount,uECount,oECount, new ArrayList<String>());
+
+
+		try{
+			int count = nfamily.getClientCount("Invalid");
+		}
+		catch(IllegalArgumentException e){
+			correctException = true;
+		}
+
+		assertTrue("Person constructor did not throw an IllegalArgumentException when given a count less than 0: ", correctException);
 	}
 
 }
