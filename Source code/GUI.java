@@ -9,6 +9,26 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * @author Ahmad Khaled, Pansilu Wickramasinghe, Dyenaan Dapoet, Esohe Aideyan.
+ * @version 1.3
+ * @since 1.0
+ */
+
+/*
+ *   The purpose of the GUI class is to provide the user with a GUI so that they could input their hamper and order details
+ *   and for the best hampers to get displayed to them.
+ *
+ *   The GUI class creates a gui box with text fields for the male, female, child under eight, and child over eight counts.
+ *   It also has two button, the first button (submit hamper) adds the hamper to the order list and the second button
+ *   (finish order) finishes the order and displays the best hampers.
+ *
+ *   The GUI class also validates each given input by checking if the inputs are numbers are positive and also checks
+ *   if the hamper created is empty or not. The GUI class throws an error message if the inputs are invalid.
+ *
+ *   The GUI class also throws an error message if the order could not be completed due to insufficient items in stock.
+ */
+
 public class GUI extends JFrame implements ActionListener, MouseListener {
 
     private ArrayList<Map<String, String>> orderList = new ArrayList<>();
@@ -16,15 +36,18 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
     private int femaleCount;
     private int childUECount;
     private int childOECount;
+
     private JLabel instructions;
     private JLabel mCLabel;
     private JLabel fCLabel;
     private JLabel cUELabel;
     private JLabel cOELabel;
-    private JTextField mCInput;
-    private JTextField fCInput;
-    private JTextField cUEInput;
-    private JTextField cOEInput;
+    private JTextField mCInput; // Male count input
+    private JTextField fCInput; // Female count input
+    private JTextField cUEInput; // Child under eight input
+    private JTextField cOEInput; // child over eight input
+
+    // The constructor sets up the GUI box.
 
     public GUI() {
         super("Create an order!");
@@ -33,12 +56,17 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
+    // Main method so that the GUI could run when the program starts.
+
     public static void main(String[] args) {
 
         EventQueue.invokeLater(() -> {
             new GUI().setVisible(true);
         });
     }
+
+    /* The setupGUI method sets up the GUI with the appropriate boxes and buttons. It also contains custom functionality
+    *  for each of the buttons (submitHamper and finishOrder) so that they work as intended. */
 
     public void setupGUI() {
         instructions = new JLabel("Please enter your information to generate an order");
@@ -57,6 +85,8 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
         cUEInput.addMouseListener(this);
         cOEInput.addMouseListener(this);
 
+        /* The submitHamper button adds the client counts into a hashmap and inserts it into the orderList */
+
         JButton submitHamper = new JButton("Submit hamper");
         submitHamper.addActionListener(new ActionListener() {
             @Override
@@ -72,6 +102,9 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
                 } else JOptionPane.showMessageDialog(submitHamper, "The input is invalid!");
             }
         });
+
+        /* The finishOrder button finishes the order and creates a new Order object with the orderList as an argument for
+        *  the constructor. */
 
         JButton finishOrder = new JButton("Finish order");
         finishOrder.addActionListener(new ActionListener() {
@@ -131,25 +164,6 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
         this.add(submitPanel, BorderLayout.PAGE_END);
     }
 
-    public void actionPerformed(ActionEvent event) {
-    }
-
-    public int getMaleCount() {
-        return maleCount;
-    }
-
-    public int getFemaleCount() {
-        return femaleCount;
-    }
-
-    public int getChildUECount() {
-        return childUECount;
-    }
-
-    public int getChildOECount() {
-        return childOECount;
-    }
-
     public void mouseClicked(MouseEvent event) {
         if (event.getSource().equals(mCInput)) mCInput.setText("");
         if (event.getSource().equals(fCInput)) fCInput.setText("");
@@ -157,24 +171,18 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
         if (event.getSource().equals(cOEInput)) cOEInput.setText("");
     }
 
-    public void mouseEntered(MouseEvent event) {
-    }
-
-    public void mouseExited(MouseEvent event) {
-    }
-
-    public void mousePressed(MouseEvent event) {
-    }
-
-    public void mouseReleased(MouseEvent event) {
-    }
+    /* The generateOrderID generates a random 8-digit number that is used for as the Order ID.
+    *  The Order ID is used to differentiate and identify each order */
 
     private String generateOrderID() {
         Random random = new Random();
-        int upperbound = 999_999_999;
-        int lowerbound = 100_00_000;
+        int upperbound = 99_999_999;
+        int lowerbound = 10_000_000;
         return String.valueOf(random.nextInt(upperbound - lowerbound) + lowerbound);
     }
+
+    /* The validateInput returns true if all GUI inputs are valid and returns false if either one of the
+    *  inputs is not a number or less than zero. */
 
     private boolean validateInput() {
         boolean allInputValid = true;
@@ -205,6 +213,9 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
         return allInputValid;
     }
 
+    /* The validateString method returns true if the input string is a number and returns false if the input string
+    *  is not a number. This is used to make sure that the user inputs are all numbers. */
+
     private boolean validateString(String textBoxInput) {
         try {
             Integer.parseInt(textBoxInput);
@@ -213,6 +224,8 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
             return false;
         }
     }
+
+    // The createBestHamperString generates a formatted string of all the best hampers
 
     private String createBestHamperString(Order order) {
         StringBuilder bestHamperString = new StringBuilder();
@@ -229,7 +242,45 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
         return bestHamperString.toString();
     }
 
+    // The getMaleCount method returns the male count
+
+    public int getMaleCount() {
+        return maleCount;
+    }
+
+    // The getFemaleCount method returns the female count
+
+    public int getFemaleCount() {
+        return femaleCount;
+    }
+
+    // The getChildUECount method returns the childUE count
+
+    public int getChildUECount() {
+        return childUECount;
+    }
+
+    // The getChildUECount method returns the childOE count
+
+    public int getChildOECount() {
+        return childOECount;
+    }
+
+    // The getOrderList method returns the orderList
+
     public ArrayList<Map<String,String>> getOrderList() {
         return this.orderList;
     }
+
+    // These methods are required for the GUI to work properly but do not require custom code as they are not used.
+
+    public void mouseEntered(MouseEvent event) { }
+
+    public void mouseExited(MouseEvent event) { }
+
+    public void mousePressed(MouseEvent event) { }
+
+    public void mouseReleased(MouseEvent event) { }
+
+    public void actionPerformed(ActionEvent event) { }
 }
