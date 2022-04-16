@@ -5,6 +5,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Ahmad Khaled, Pansilu Wickramasinghe, Dyenaan Dapoet, Esohe Aideyan.
+ * @version 1.2
+ * @since 1.0
+ */
+
+/*
+ * The purpose of the Database class is to be able to import food item and client values onto the program.
+ *
+ * the class uses mysql queries and statements to import food item and client information. It also deletes items given
+ * a certain food item ID.
+ *
+ * The intended URL to be used is: jdbc:mysql://localhost/food_inventory
+ * The intended username to be used is: student
+ * The intended password to be used is: ensf
+ */
+
 public class Database {
 
     private final String DBURL;
@@ -20,6 +37,8 @@ public class Database {
         this.USERNAME = user;
         this.PASSWORD = pw;
     }
+
+    // The initializeConnection method initializes a connection with the database
 
     public void initializeConnection() {
         try {
@@ -41,6 +60,9 @@ public class Database {
     String getPassword() {
         return this.PASSWORD;
     }
+
+    /* The selectClientNeeds method takes a client ID as an argument and returns a map of the data for the client with
+    * the given ID. */
 
     public Map<String, String> selectClientNeeds(String clientID) {
         Map<String, String> map = new HashMap<String, String>();
@@ -73,6 +95,9 @@ public class Database {
         }
         return map;
     }
+
+    /* The selectFoodItem method takes a food ID as an argument and returns a map of the data for the food item with
+     * the given ID. */
 
     public Map<String, String> selectFoodItem(String foodID) {
         Map<String, String> map = new HashMap<String, String>();
@@ -107,6 +132,8 @@ public class Database {
         return map;
     }
 
+    // The updateItemLength method counts the amount of items that currently exist and updates the itemLength variable.
+
     private void updateItemLength() {
         int length = 0;
         try {
@@ -126,9 +153,13 @@ public class Database {
         this.itemLength = length;
     }
 
+    // The getItemLength method returns itemLength
+
     public int getItemLength() {
         return this.itemLength;
     }
+
+    // The deleteFoodItem deletes the food item of a given ID from the database
 
     public void deleteFoodItem(String foodID) {
         try {
@@ -143,6 +174,8 @@ public class Database {
             ex.printStackTrace();
         }
     }
+
+    // The getItemIDs returns an ArrayList of all existing food item IDs in the database
 
     public ArrayList<String> getItemIDs() {
         ArrayList<String> itemIDs = new ArrayList<>();
@@ -163,6 +196,7 @@ public class Database {
         return itemIDs;
     }
 
+    // The close method closes the database connection
 
     public void close() {
         try {
