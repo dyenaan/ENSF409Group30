@@ -1,6 +1,7 @@
 package edu.ucalgary.ensf409;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,17 +53,17 @@ public class Database {
 
             if (!results.next()) throw new IllegalArgumentException(clientID + " is an invalid client ID");
             else {
-                String calories = results.getString("Calories");
-                String wholeGrains = results.getString("WholeGrains");
-                String protein = results.getString("Protein");
-                String fruitsVeggies = results.getString("FruitVeggies");
-                String other = results.getString("Other");
+                String calories = results.getString(NutritionTypes.CALORIES.asString());
+                String wholeGrains = results.getString(NutritionTypes.WHOLE_GRAINS.asString());
+                String protein = results.getString(NutritionTypes.PROTEIN.asString());
+                String fruitsVeggies = results.getString(NutritionTypes.FRUIT_VEGGIES.asString());
+                String other = results.getString(NutritionTypes.OTHER.asString());
 
-                map.put("Calories", calories);
-                map.put("WholeGrains", wholeGrains);
-                map.put("Protein", protein);
-                map.put("FruitVeggies", fruitsVeggies);
-                map.put("Other", other);
+                map.put(NutritionTypes.CALORIES.asString(), calories);
+                map.put(NutritionTypes.WHOLE_GRAINS.asString(), wholeGrains);
+                map.put(NutritionTypes.PROTEIN.asString(), protein);
+                map.put(NutritionTypes.FRUIT_VEGGIES.asString(), fruitsVeggies);
+                map.put(NutritionTypes.OTHER.asString(), other);
                 map.put("ClientID", clientID);
             }
 
@@ -91,11 +92,11 @@ public class Database {
                 String calories = results.getString("Calories");
                 String name = results.getString("Name");
 
-                map.put("GrainContent", grainContent);
-                map.put("FVContent", fvContent);
-                map.put("ProContent", proContent);
-                map.put("Other", other);
-                map.put("Calories", calories);
+                map.put(NutritionTypes.WHOLE_GRAINS.asString(), grainContent);
+                map.put(NutritionTypes.FRUIT_VEGGIES.asString(), fvContent);
+                map.put(NutritionTypes.PROTEIN.asString(), proContent);
+                map.put(NutritionTypes.OTHER.asString(), other);
+                map.put(NutritionTypes.CALORIES.asString(), calories);
                 map.put("ItemID", foodID);
                 map.put("Name", name);
             }
@@ -106,7 +107,7 @@ public class Database {
         return map;
     }
 
-    public void updateItemLength() {
+    private void updateItemLength() {
         int length = 0;
         try {
             String query = "SELECT * FROM AVAILABLE_FOOD";
@@ -143,18 +144,16 @@ public class Database {
         }
     }
 
-    public String[] getItemIDs() {
-        String[] itemIDs = new String[this.getItemLength()];
+    public ArrayList<String> getItemIDs() {
+        ArrayList<String> itemIDs = new ArrayList<>();
         try {
             String query = "SELECT * FROM AVAILABLE_FOOD";
 
             Statement myStmt = dbConnect.createStatement();
             results = myStmt.executeQuery(query);
 
-            int i = 0;
             while (results.next()) {
-                itemIDs[i] = results.getString("ItemID");
-                i++;
+                itemIDs.add(results.getString("ItemID"));
             }
 
             myStmt.close();

@@ -1,3 +1,4 @@
+
 package edu.ucalgary.ensf409;
 
 import java.awt.BorderLayout;
@@ -6,6 +7,9 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.FlowLayout;
 import javax.swing.SpringLayout;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
 
 public class GUIOrderID extends JFrame implements ActionListener, MouseListener{
 
@@ -24,8 +28,10 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener{
     private JTextField fCInput;
     private JTextField cUEInput;
     private JTextField cOEInput;
+	
+	private HashMap<String, Integer> hMap = new HashMap<String, Integer>();
     
-    public GUIPetID(){
+    public GUIOrderID(){
         super("Create an order!");
         setupGUI();
         setSize(500,300);
@@ -53,18 +59,28 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener{
         
         JButton submitInfo = new JButton("Submit");
         submitInfo.addActionListener(this);
+		
+		JButton addButton = new JButton("Add");
+		addButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				
+				EventQueue.invokeLater(() -> {
+                new GUIOrderID().setVisible(true);        
+                });
+			}
+		});
         
         JPanel headerPanel = new JPanel();
         headerPanel.setLayout(new FlowLayout());
         
         JPanel clientPanel = new JPanel();
-		SpringLayout cPanel = new SpringLayout();
-        //clientPanel.setLayout(new SpringLayout());
+		clientPanel.setLayout(new FlowLayout());
 
         JPanel submitPanel = new JPanel();
         submitPanel.setLayout(new FlowLayout());
         
         headerPanel.add(instructions);
+		
         clientPanel.add(mCLabel);
         clientPanel.add(mCInput);
         clientPanel.add(fCLabel);
@@ -73,19 +89,7 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener{
         clientPanel.add(cUEInput);
         clientPanel.add(cOELabel);
         clientPanel.add(cOEInput);
-		/*clientPanel.add(mCLabel);
-		clientPanel.add(mCInput);
-		cPanel.putConstraint(SpringLayout.WEST, mCLabel, 20, SpringLayout.WEST, clientPanel);
-		cPanel.putConstraint(SpringLayout.NORTH, mCLabel, 20, SpringLayout.NORTH, clientPanel);
-		cPanel.putConstraint(SpringLayout.WEST, mCInput, 20, SpringLayout.WEST, mCLabel);
-		cPanel.putConstraint(SpringLayout.NORTH, mCInput, 20, SpringLayout.NORTH, clientPanel);
-		
-		clientPanel.add(fCLabel);
-		clientPanel.add(fCInput);
-		cPanel.putConstraint(SpringLayout.WEST, fCLabel, 20, SpringLayout.WEST, clientPanel);
-		cPanel.putConstraint(SpringLayout.NORTH, fCLabel, 20, SpringLayout.NORTH, clientPanel);
-		cPanel.putConstraint(SpringLayout.WEST, fCInput, 20, SpringLayout.WEST, fCLabel);
-		cPanel.putConstraint(SpringLayout.NORTH, fCInput, 20, SpringLayout.NORTH, clientPanel);*/
+		clientPanel.add(addButton);
 		
         submitPanel.add(submitInfo);
         
@@ -100,10 +104,21 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener{
         childUECount = Integer.parseInt(cUEInput.getText());
         childOECount = Integer.parseInt(cOEInput.getText());
         
-        if(validateInput()){
-            String orderID = idProcessing();
-            JOptionPane.showMessageDialog(this, "Your order ID is " + orderID);
+        if(!validateInput()){
+            JOptionPane.showMessageDialog(this, "Please input valid numbers");
         }
+		else{
+			String orderID = idProcessing();
+			JOptionPane.showMessageDialog(this, "Your order ID is " + orderID);
+			hMap.put("maleCount", maleCount);
+			hMap.put("femaleCount", femaleCount);
+			hMap.put("childUECount", childUECount);
+			hMap.put("childOECount", childOECount);
+		}
+		
+		/*if(event.getSource() == addButton){
+			GUIOrderID myGUI = new GUIOrderID().setVisible(true);
+		}*/
     }
 	
     public int getMaleCount(){
@@ -122,6 +137,20 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener{
 		return Integer.parseInt(cOEInput.getText());
 	}
 	
+	public HashMap<String, Integer> getHashMap(){
+		/*for(String name : this.hMap.keySet()){
+			String key = name.toString();
+			String value = this.hMap.get(name).toString();
+			System.out.println(key + " " + value);
+		}*/
+		
+		for(Map.Entry entry : this.hMap.entrySet()){
+			System.out.println(entry.getKey() + " : " + entry.getValue());
+		}
+		return this.hMap;
+		//System.out.println(Arrays.asList(this.hMap));
+	}
+	
     public void mouseClicked(MouseEvent event){
         
         if(event.getSource().equals(mCInput))
@@ -135,6 +164,12 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener{
 
         if(event.getSource().equals(cOEInput))
             cOEInput.setText("");
+		
+		/*if(event.getSource().equals(addButton)){
+			EventQueue.invokeLater(() -> {
+            new GUIOrderID().setVisible(true);        
+            });
+		}*/
                 
     }
     
@@ -196,8 +231,11 @@ public class GUIOrderID extends JFrame implements ActionListener, MouseListener{
     public static void main(String[] args) {
         
         EventQueue.invokeLater(() -> {
-            new GUIPetID().setVisible(true);        
+            GUIOrderID work = new GUIOrderID();
+			work.setVisible(true);
+            work.getHashMap();			
         });
+		
     }
         
 }
