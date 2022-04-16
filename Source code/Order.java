@@ -1,7 +1,14 @@
+/**
+@author Ahmad Elshiltawi, Pansilu Wickramasinghe, Dyenaan Dapoet, Esohe Aideyan
+@version 1.3
+@since 1.0
+*/
+
 package edu.ucalgary.ensf409;
 
 import java.util.ArrayList;
 import java.util.Map;
+
 
 /*
  * The order class creates a family class for each hamper and stores them into a family array.
@@ -71,4 +78,3 @@ public class Order {
         return true;
     }
 }
-
