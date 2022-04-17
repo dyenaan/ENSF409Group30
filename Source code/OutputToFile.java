@@ -7,7 +7,7 @@ import java.util.Map;
 
 /**
  * @author Ahmad Khaled, Pansilu Wickramasinghe, Dyenaan Dapoet, Esohe Aideyan.
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 
@@ -69,18 +69,23 @@ public class OutputToFile {
     // The formatFamilyString method creates a string of the client counts.
 
     private String formatFamilyString(Family family) {
-        if (family.getClientCount(ClientTypes.MALE.asString()) < 1) throw new IllegalArgumentException();
+        int maleCount = family.getClientCount(ClientTypes.MALE.asString());
+        int femaleCount = family.getClientCount(ClientTypes.FEMALE.asString());
+        int childUECount = family.getClientCount(ClientTypes.CHILDUE.asString());
+        int childOECount = family.getClientCount(ClientTypes.CHILDOE.asString());
+
+        if (maleCount + femaleCount + childOECount + childUECount < 1) throw new IllegalArgumentException();
         StringBuilder formattedString = new StringBuilder();
-        if (family.getClientCount(ClientTypes.MALE.asString()) > 0) {
+        if (maleCount > 0) {
             formattedString.append("Adult male: ").append(family.getClientCount(ClientTypes.MALE.asString())).append(", ");
         }
-        if (family.getClientCount(ClientTypes.FEMALE.asString()) > 0) {
+        if (femaleCount > 0) {
             formattedString.append("Adult female: ").append(family.getClientCount(ClientTypes.FEMALE.asString())).append(", ");
         }
-        if (family.getClientCount(ClientTypes.CHILDUE.asString()) > 0) {
+        if (childUECount > 0) {
             formattedString.append("Child under eight: ").append(family.getClientCount(ClientTypes.CHILDUE.asString())).append(", ");
         }
-        if (family.getClientCount(ClientTypes.CHILDOE.asString()) > 0) {
+        if (childOECount > 0) {
             formattedString.append("Child over eight: ").append(family.getClientCount(ClientTypes.CHILDOE.asString())).append(", ");
         }
         formattedString.deleteCharAt(formattedString.length() - 2);
