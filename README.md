@@ -68,4 +68,4 @@ Aside from user inputs, each class validates the its constructor variable or var
 
 <h2> Tests </h2>
 
-Along with the program, tests are provided from the following classes: Algorithm, Family, Order, Person, and OutputToFile. These tests 
+Along with the program, tests are provided from the following classes: Algorithm, Family, Order, Person, and OutputToFile. These tests are provided to check if the functionality of each class works properly or not.
