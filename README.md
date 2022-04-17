@@ -70,4 +70,4 @@ Aside from user inputs, each class validates the its constructor variable or var
 
 Along with the program, tests are provided from the following classes: Algorithm, Family, Order, Person, and OutputToFile. These tests are provided to check if the functionality of each class works properly or not.
 
-Note: Some getters (namely getOrderCompleted in the Order class and getNutrition in the person class) could not be fully tested as their values depends on the state of the database.
+Note: Some getters (namely getOrderCompleted in the Order class and getNutrition in the Person class) could not be fully tested as their values depends on the state of the database.
