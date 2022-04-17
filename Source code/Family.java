@@ -2,6 +2,16 @@ package edu.ucalgary.ensf409;
 
 import java.util.*;
 
+/**
+ * @author Ahmad Khaled, Pansilu Wickramasinghe, Dyenaan Dapoet, Esohe Aideyan.
+ * @version 1.4
+ * @since 1.0
+ */
+
+/*
+ * The purpose of the Family class is store a group of person objects and to create the best hamper for these person objects.
+ */
+
 public class Family{
     private final Person[] PEOPLE;
 	private final int MALE_COUNT;
@@ -40,6 +50,8 @@ public class Family{
         }
 	}
 
+    // The findBestHamper method uses the algorithm class to find the best hamper and stores it in the bestHamper variable
+
     public void findBestHamper() throws HamperAlreadyFoundException, StockNotAvailableException {
         Algorithm a = new Algorithm(PEOPLE, currentUsedItemIDs);
         this.bestHamper = a.getBestHamper();
@@ -49,32 +61,35 @@ public class Family{
         }
     }
 
+    // The getPeople method returns the people array
+
 	public Person[] getPeople(){
 		return this.PEOPLE;
 	}
+
+    // The getHamper method returns bestHamper
 
 	public ArrayList<Map<String, String>> getHamper(){
 		return this.bestHamper;
 	}
 
-    public int getClientCount(ClientTypes type) {
-        switch (type) {
-            case MALE:
-                return this.MALE_COUNT;
-            case FEMALE:
-                return this.FEMALE_COUNT;
-            case CHILDOE:
-                return this.CHILDOE_COUNT;
-            case CHILDUE:
-                return this.CHILDUE_COUNT;
-            default:
-                throw new IllegalArgumentException("Did not recognize input");
-        }
+    // given the client type, the getClientCount method returns the amount of this client in the family.
+
+    public int getClientCount(String type) {
+        if (type.equals(ClientTypes.MALE.asString())) return this.MALE_COUNT;
+        else if (type.equals(ClientTypes.FEMALE.asString())) return this.FEMALE_COUNT;
+        else if (type.equals(ClientTypes.CHILDUE.asString())) return this.CHILDUE_COUNT;
+        else if (type.equals(ClientTypes.CHILDOE.asString())) return this.CHILDOE_COUNT;
+        else throw new IllegalArgumentException("Did not recognize input");
     }
+
+    // The getCurrentUsedItemIDs returns currentUsedItemIDs
 
     public ArrayList<String> getCurrentUsedItemIDs() {
         return this.currentUsedItemIDs;
     }
+
+    // The validateCounts method returns true if all client counts are 0 or bigger, else returns false.
 
     private boolean validateCounts(int male, int female, int childOE, int childUE) {
         return male >= 0 && female >= 0 && childOE >= 0 && childUE >= 0;

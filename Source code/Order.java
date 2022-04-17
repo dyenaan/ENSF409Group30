@@ -3,6 +3,12 @@ package edu.ucalgary.ensf409;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * @author Ahmad Khaled, Pansilu Wickramasinghe, Dyenaan Dapoet, Esohe Aideyan.
+ * @version 1.3
+ * @since 1.0
+ */
+
 /*
  * The order class creates a family class for each hamper and stores them into a family array.
  * The order class is also responsible for deleting all the items after each best hamper is found
@@ -34,9 +40,13 @@ public class Order {
         }
     }
 
+    // The getFamilies method returns the families array
+
     public Family[] getFamilies() {
         return families;
     }
+
+    // The getOrderCompleted method returns the boolean orderCompleted
 
     public boolean getOrderCompleted() {
         return orderCompleted;
@@ -53,7 +63,8 @@ public class Order {
         db.close();
     }
 
-    // @TODO : Find a more elegant way of validating the orderList
+    // The validateOrderList method returns true if the orderList is valid and false if the orderList is not valid
+
     private boolean validateOrderList(ArrayList<Map<String, String>> orderList) {
         if (orderList.isEmpty()) return false;
         else {

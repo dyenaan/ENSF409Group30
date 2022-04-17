@@ -5,10 +5,28 @@ import org.junit.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+/**
+ * @author Ahmad Khaled, Pansilu Wickramasinghe, Dyenaan Dapoet, Esohe Aideyan.
+ * @version 1.0
+ * @since 1.0
+ */
+
+/*
+ * The purpose of the OrderTest class is to test the functionality of the Order class.
+ */
+
 public class OrderTest{
 
+    int mCount = 1;
+    int invMCount = -2; // Invalid male count
+    int fCount = 0;
+    int uECount = 0;
+    int oECount = 0;
+
+    // The testOrderEmptyOrderList checks if the Order class throws an IllegalArgumentException if the OrderList is empty
+
     @Test
-    public void testEmptyOrderList() {
+    public void testOrderEmptyOrderList() {
         boolean correctException = false;
         ArrayList<Map<String,String>> emptyOrderList = new ArrayList<>();
 
@@ -22,15 +40,17 @@ public class OrderTest{
         assertTrue("Order constructor did not throw an IllegalArgumentException for an empty order list.", correctException);
     }
 
+    // The testInvalidOrderList checks if the Order class throws an IllegalArgumentException if the OrderList is invalid
+
     @Test
     public void testInvalidOrderList() {
         boolean correctException = false;
         ArrayList<Map<String,String>> invalidOrderList = new ArrayList<>();
         Map<String, String> family = new HashMap<>();
-        family.put("Male", "0");
-        family.put("Female", "-1");
-        family.put("ChildUE", "0");
-        family.put("ChildOE", "0");
+        family.put("Male", Integer.toString(invMCount)); // Invalid male count
+        family.put("Female", Integer.toString(fCount));
+        family.put("ChildUE", Integer.toString(uECount));
+        family.put("ChildOE", Integer.toString(oECount));
         invalidOrderList.add(family);
 
         try{
@@ -43,14 +63,17 @@ public class OrderTest{
         assertTrue("Order constructor did not throw an IllegalArgumentException for an invalid order list.", correctException);
     }
 
+    /* The testMissingClientTypeOrderList checks if the Order class throws an IllegalArgumentException
+    * if the OrderList is missing a client type */
+
     @Test
     public void testMissingClientTypeOrderList() {
         boolean correctException = false;
         ArrayList<Map<String,String>> missingOrderList = new ArrayList<>();
         Map<String, String> family = new HashMap<>();
-        family.put("Male", "0");
-        family.put("Female", "0");
-        family.put("ChildUE", "0");
+        family.put("Male", Integer.toString(mCount));
+        family.put("Female", Integer.toString(fCount));
+        family.put("ChildUE", Integer.toString(uECount));
         missingOrderList.add(family);
 
         try{
@@ -63,46 +86,39 @@ public class OrderTest{
         assertTrue("Order constructor did not throw an IllegalArgumentException for an order list with a missing client type.", correctException);
     }
 
+    // The testValidConstructor method tests if the constructor runs properly if given a valid input
+
     @Test
     public void testValidConstructor() throws HamperAlreadyFoundException, StockNotAvailableException {
         ArrayList<Map<String,String>> validOrderList = new ArrayList<>();
         Map<String, String> family = new HashMap<>();
-        family.put("Male", "1");
-        family.put("Female", "1");
-        family.put("ChildOE", "1");
-        family.put("ChildUE", "1");
+        family.put("Male", Integer.toString(mCount));
+        family.put("Female", Integer.toString(fCount));
+        family.put("ChildOE", Integer.toString(oECount));
+        family.put("ChildUE", Integer.toString(uECount));
         validOrderList.add(family);
         Order order = new Order(validOrderList);
         assertNotNull("Order constructor did not create an object when given a valid count:", order);
     }
 
+    // The testGetFamilies method tests the getFamilies getter
+
     @Test
     public void testGetFamilies() throws HamperAlreadyFoundException, StockNotAvailableException {
         ArrayList<Map<String,String>> validOrderList = new ArrayList<>();
         Map<String, String> family = new HashMap<>();
-        family.put("Male", "1");
-        family.put("Female", "1");
-        family.put("ChildOE", "1");
-        family.put("ChildUE", "1");
+        family.put("Male", Integer.toString(mCount));
+        family.put("Female", Integer.toString(fCount));
+        family.put("ChildOE", Integer.toString(oECount));
+        family.put("ChildUE", Integer.toString(uECount));
         validOrderList.add(family);
         Order order = new Order(validOrderList);
         Family[] families = order.getFamilies();
         assertNotNull("Method getPeople did not return an object of type Family: " , families);
     }
 
-    @Test
-    public void testGetOrderCompleted() throws HamperAlreadyFoundException, StockNotAvailableException {
-        ArrayList<Map<String,String>> validOrderList = new ArrayList<>();
-        Map<String, String> family = new HashMap<>();
-        family.put("Male", "1");
-        family.put("Female", "1");
-        family.put("ChildOE", "1");
-        family.put("ChildUE", "1");
-        validOrderList.add(family);
-        Order order = new Order(validOrderList);
-        boolean orderCompleted = order.getOrderCompleted();
-        assertNotNull("Method getPeople did not return an object of type Boolean: " , orderCompleted);
-    }
+    /* Note: The getOrderCompleted method could not be tested because the value of the getter depends on
+    * the state of the database. */
 }
 
 

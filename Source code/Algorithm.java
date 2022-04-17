@@ -5,6 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * @author Ahmad Khaled, Pansilu Wickramasinghe, Dyenaan Dapoet, Esohe Aideyan.
+ * @version 1.5
+ * @since 1.0
+ */
+
 /*
  *   The purpose of the following algorithm is to find the best hamper possible given a database of food items.
  *
@@ -65,6 +71,8 @@ class Algorithm {
         else if (Objects.equals(type, NutritionTypes.OTHER.asString())) return this.familyOtherCalories;
         else throw new IllegalArgumentException("Did not recognize input!");
     }
+
+    // The getBestHamper is a simple getter than returns the best hamper
 
     public ArrayList<Map<String, String>> getBestHamper() {
         return this.bestHamper;
