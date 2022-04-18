@@ -20,7 +20,7 @@ import java.util.*;
  *   and for the best hampers to get displayed to them.
  *
  *   The GUI class creates a gui box with text fields for the male, female, child under eight, and child over eight counts.
- *   It also has two button, the first button (submit hamper) adds the hamper to the order list and the second button
+ *   It also has two button, the first button (add hamper) adds the hamper to the order list and the second button
  *   (finish order) finishes the order and displays the best hampers.
  *
  *   The GUI class also validates each given input by checking if the inputs are numbers are positive and also checks
@@ -87,8 +87,8 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
 
         /* The submitHamper button adds the client counts into a hashmap and inserts it into the orderList */
 
-        JButton submitHamper = new JButton("Submit hamper");
-        submitHamper.addActionListener(new ActionListener() {
+        JButton addHamper = new JButton("Add hamper");
+        addHamper.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (validateInput()) {
@@ -98,8 +98,8 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
                     family.put("ChildUE", Integer.toString(getChildUECount()));
                     family.put("ChildOE", Integer.toString(getChildOECount()));
                     orderList.add(family);
-                    JOptionPane.showMessageDialog(submitHamper, "Successfully submitted hamper!");
-                } else JOptionPane.showMessageDialog(submitHamper, "The input is invalid!");
+                    JOptionPane.showMessageDialog(addHamper, "Successfully submitted hamper!");
+                } else JOptionPane.showMessageDialog(addHamper, "The input is invalid!");
             }
         });
 
@@ -115,7 +115,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
                         String orderID = generateOrderID();
                         JOptionPane.showMessageDialog(finishOrder, "The order is successfully finished! The order ID is " + orderID);
                         finishOrder.setEnabled(false);
-                        submitHamper.setEnabled(false);
+                        addHamper.setEnabled(false);
                         Order order = new Order(orderList);
                         OutputToFile output = new OutputToFile(orderID);
 
@@ -133,7 +133,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
                 } else JOptionPane.showMessageDialog(finishOrder, "the order list is empty!");
 
                 finishOrder.setEnabled(true);
-                submitHamper.setEnabled(true);
+                addHamper.setEnabled(true);
                 orderList = new ArrayList<>();
             }
         });
@@ -156,7 +156,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
         clientPanel.add(cUEInput);
         clientPanel.add(cOELabel);
         clientPanel.add(cOEInput);
-        submitPanel.add(submitHamper);
+        submitPanel.add(addHamper);
         submitPanel.add(finishOrder);
 
         this.add(headerPanel, BorderLayout.NORTH);
